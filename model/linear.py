@@ -5,21 +5,25 @@ from torch.utils.data import Dataset
 from torch.utils.data import DataLoader, random_split
 import utils
 import data as dm
+from data import Normalize
 
 
 class StockDataset(Dataset):
-    def __init__(self, data, sequence_length=90, prediction_length=10):
+    def __init__(self, data, sequence_length=64, prediction_length=1, field=10):
         self.data = torch.tensor(data, dtype=torch.float32)
         self.sequence_length = sequence_length
         self.prediction_length = prediction_length
+        self.field = field
 
     def __len__(self):
         return len(self.data) - self.sequence_length - self.prediction_length + 1
 
     def __getitem__(self, idx):
-        idx_end = idx + self.sequence_length + self.prediction_length
         input_data = self.data[idx:idx + self.sequence_length]
-        target_data = self.data[idx + self.sequence_length:idx_end]
+        predict = self.data[idx + self.sequence_length]
+        target_data = [0 for _ in range(self.field)]
+        target_data[int(predict)] = 1
+        target_data = torch.tensor(target_data, dtype=torch.float32)
         return input_data, target_data
 
 
@@ -44,23 +48,36 @@ class LinearModel(nn.Module):
         return x
 
 
+def normalize(price: float) -> int:
+    if price < -0.1:
+        price = -0.1
+    elif price > 0.1:
+        price = 0.1
+    return int(price * 100)
+
+
 if __name__ == '__main__':
     # 创建模型
     input_size = 64  # 输入序列长度
-    output_size = 4  # 输出序列长度
+    field = 100
+    output_size = 100  # 输出序列长度 range(100)
     hidden_size = 256  # 隐藏层维度
-    num_layers = 3  # 隐藏层数
+    num_layers = 2  # 隐藏层数
 
     model = LinearModel(input_size, output_size, hidden_size, num_layers)
-    stock_data = dm.DataMacine(sample_num=1000).sample_only_price("SHSE.600000", utils.Frequency.Frequency_Day, 2023)
-    dataset = StockDataset(stock_data, input_size, output_size)
+    stock_data = dm.DataMacine(sample_num=1000).sample_only_price_volatility(utils.CoreSymbol.沪深300ETF_510300.value,
+                                                                             utils.Frequency.Frequency_Day, 2023)
+    N = Normalize(field, stock_data)
+    stock_data = N.normalize_list(stock_data)
+
+    dataset = StockDataset(stock_data, input_size, output_size, field)
 
     train_size = int(0.8 * len(dataset))
     val_size = len(dataset) - train_size
     train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
 
     # 创建数据加载器
-    batch_size = 32
+    batch_size = 64
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 
@@ -69,11 +86,10 @@ if __name__ == '__main__':
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
     # 训练模型
-    num_epochs = 10
+    num_epochs = 100000
     for epoch in range(num_epochs):
         model.train()
         for inputs, targets in train_loader:
-            print(inputs.shape)
             if len(inputs) != batch_size:
                 continue
             optimizer.zero_grad()
