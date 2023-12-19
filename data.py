@@ -22,7 +22,7 @@ class DataMacine:
         expand_num = self.sample_num * 5
         data = utils.get_data_n(symbol, frequency, expand_num, end)
         if data is None:
-            assert False, "get data failed: " + symbol
+            assert False, "get database failed: " + symbol
 
         index = self.random.randint(0, expand_num - self.sample_num)
         # 收盘价
