@@ -28,11 +28,11 @@ def test_update_symbols():
 
         if len(valid_list) > 100:
             csv = pd.DataFrame({"name": valid_list})
-            csv.to_csv('./data/symbol.data', mode='a', header=False, index=False)
+            csv.to_csv('./database/symbol.database', mode='a', header=False, index=False)
             valid_list = []
 
     csv = pd.DataFrame({"name": valid_list})
-    csv.to_csv('./data/symbol.data', mode='a', header=False, index=False)
+    csv.to_csv('./database/symbol.database', mode='a', header=False, index=False)
 
 
 test_update_symbols()
