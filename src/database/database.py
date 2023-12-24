@@ -6,7 +6,7 @@ import src.draw.draw as draw
 import src.configure.configure as configure
 from enum import Enum
 
-from src.database.analyse import analyse_divergence, analyse_ao, analyse_alligator_line
+from src.database.analyse import analyse_divergence, analyse_ao, analyse_alligator_line, analyse_fractal
 
 # 设置token， 查看已有token ID,在用户-密钥管理里获取
 set_token(configure.token)
@@ -38,6 +38,8 @@ def get_n_price_before_now(symbol: str, frequency: Frequency, count: int) -> Dat
     analyse_ao(data)
     # 计算背离柱
     analyse_divergence(data)
+    # 分析分型数据
+    analyse_fractal(data)
 
     return data
 
