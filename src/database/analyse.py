@@ -122,3 +122,38 @@ def analyse_alligator_line(data: DataFrame) -> None:
     data['jaw'] = data['mid'].rolling(13).mean().shift(8)
     data['teeth'] = data['mid'].rolling(8).mean().shift(5)
     data['lips'] = data['mid'].rolling(5).mean().shift(3)
+
+
+# 判断是否是上分型
+# 输入 [1*5] 的数据, 返回bool值
+def is_up_fractal(data: DataFrame) -> bool:
+    # 判断是否是上分型, 5根K线中，中间一根最高，两边都比它低
+    if data['high'].values[2] == max(data['high'].values):
+        return True
+    return False
+
+
+# 判断是否是下分型
+# 输入 [1*5] 的数据, 返回bool值
+def is_down_fractal(data: DataFrame) -> bool:
+    # 判断是否是下分型, 5根K线中，中间一根最低，两边都比它高
+    if data['low'].values[2] == min(data['low'].values):
+        return True
+    return False
+
+
+# 分析分型数据
+def analyse_fractal(data: DataFrame) -> None:
+    # 分析上分型
+    up_fractal = [0] * len(data)
+    for i in range(2, len(data) - 2):
+        if is_up_fractal(data[i - 2:i + 3]):
+            up_fractal[i] = 1
+    data['up fractal'] = up_fractal
+
+    # 分析下分型
+    down_fractal = [0] * len(data)
+    for i in range(2, len(data) - 2):
+        if is_down_fractal(data[i - 2:i + 3]):
+            down_fractal[i] = 1
+    data['down fractal'] = down_fractal

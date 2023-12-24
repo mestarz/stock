@@ -70,7 +70,12 @@ def draw_alligator_line(day: DataFrame):
           mpf.make_addplot(day['divergence level1'] * day['angle'], panel=2, type='bar', color='orange',
                            secondary_y=False),
           mpf.make_addplot(day['divergence level2'] * day['angle'], panel=3, type='bar', color='blue',
-                           secondary_y=False)]
+                           secondary_y=False),
+          # 上分型数据
+          mpf.make_addplot(day['up fractal'] * day['high'], panel=4, type='bar', color='red', markersize=100),
+          # 下分型数据
+          mpf.make_addplot(day['down fractal'] * day['low'], panel=5, type='bar', color='green', markersize=100),
+          ]
 
     # 获取所有 day['divergence level1'] * day['angle'] != 0 的下标
     index_list = day[(day['divergence level1'] * day['angle'] != 0)].index.tolist()
