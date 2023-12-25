@@ -45,7 +45,7 @@ def get_n_price_before_now(symbol: str, frequency: Frequency, count: int) -> Dat
 
 
 if __name__ == '__main__':
-    d1 = get_n_price_before_now('SHSE.510300', Frequency.Frequency_H, 300)
+    d1 = get_n_price_before_now('SZSE.300939', Frequency.Frequency_H, 300)
     d2 = get_n_price_before_now('SHSE.510300', Frequency.Frequency_M, 100)
     d3 = get_n_price_before_now('SHSE.510300', Frequency.Frequency_L, 100)
     # analyse_divergence(d1)

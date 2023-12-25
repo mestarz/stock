@@ -95,6 +95,11 @@ def analyse_divergence(data: DataFrame) -> None:
         else:
             price_slope = trend_slope(data['low'][index:i + 1].values)
 
+        # 斜率标准化, 正常来说价格越高斜率越大，所以根据当前价格标准斜率
+        # 以价格10为基数进行格式
+        price_slope = (price_slope / data['close'][i]) * 10
+        jaw_slope = (jaw_slope / data['close'][i]) * 10
+
         # 计算0到x方向的发散夹角, 收敛夹角无效
         # 上升趋势，价格斜率大于鳄鱼线斜率
         if price_slope > jaw_slope and data['close'][i] > data['close'][index]:
