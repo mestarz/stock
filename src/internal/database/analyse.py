@@ -162,3 +162,11 @@ def analyse_fractal(data: DataFrame) -> None:
         if is_down_fractal(data[i - 2:i + 3]):
             down_fractal[i] = 1
     data['down fractal'] = down_fractal
+
+
+# 计算每日的历史波动率
+def analyse_volatility(data: DataFrame) -> None:
+    # 计算每日收益率
+    data['daily return'] = data['close'].pct_change()
+    # 计算每日波动率, 波动率的精度为小数点后两位，周期为28天
+    data['volatility'] = data['daily return'].rolling(28).std() * np.sqrt(28).round(2)

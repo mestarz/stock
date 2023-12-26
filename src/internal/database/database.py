@@ -1,12 +1,12 @@
 from datetime import datetime
 from gm.api import *
 from pandas import DataFrame
-import src.draw.draw as draw
 
-import src.configure.configure as configure
+import src.internal.data.configure as configure
 from enum import Enum
 
-from src.database.analyse import analyse_divergence, analyse_ao, analyse_alligator_line, analyse_fractal
+from src.internal.database.analyse import analyse_divergence, analyse_ao, analyse_alligator_line, analyse_fractal, \
+    analyse_volatility
 
 # 设置token， 查看已有token ID,在用户-密钥管理里获取
 set_token(configure.token)
@@ -40,17 +40,7 @@ def get_n_price_before_now(symbol: str, frequency: Frequency, count: int) -> Dat
     analyse_divergence(data)
     # 分析分型数据
     analyse_fractal(data)
+    # 分析波动率
+    analyse_volatility(data)
 
     return data
-
-
-if __name__ == '__main__':
-    d1 = get_n_price_before_now('SZSE.300939', Frequency.Frequency_H, 300)
-    d2 = get_n_price_before_now('SHSE.510300', Frequency.Frequency_M, 100)
-    d3 = get_n_price_before_now('SHSE.510300', Frequency.Frequency_L, 100)
-    # analyse_divergence(d1)
-    # print(d1['angle'])
-    # print(d1['divergence'])
-    # print(d1['angle'][50:])
-    draw.draw_alligator_line(d1)
-    # print(d1['valid divergence'][50:])
