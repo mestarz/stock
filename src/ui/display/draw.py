@@ -2,6 +2,8 @@ import mplfinance as mpf
 from pandas import DataFrame
 import pandas as pd
 
+from src.internal.database.database import get_n_price_before_now, Frequency
+
 # 创建一个字典，用于定义K线图的颜色
 mc = mpf.make_marketcolors(up='r', down='g', inherit=True)
 # 创建一个样式对象，用于定义K线图的样式
@@ -75,6 +77,8 @@ def draw_alligator_line(day: DataFrame):
           mpf.make_addplot(day['up fractal'] * day['high'], panel=4, type='bar', color='red', markersize=100),
           # 下分型数据
           mpf.make_addplot(day['down fractal'] * day['low'], panel=5, type='bar', color='green', markersize=100),
+          # 波动率数据
+          mpf.make_addplot(day['volatility'], panel=6, type='bar', color='blue', secondary_y=False),
           ]
 
     # 获取所有 day['divergence level1'] * day['angle'] != 0 的下标
@@ -85,3 +89,10 @@ def draw_alligator_line(day: DataFrame):
              vlines=dict(vlines=index_list, linewidths=[0.1] * len(index_list),
                          colors=['orange'] * len(index_list),
                          linestyle='dashed', alpha=0.3))
+
+
+if __name__ == '__main__':
+    d1 = get_n_price_before_now('SHSE.603136', Frequency.Frequency_H, 300)
+    d2 = get_n_price_before_now('SHSE.510300', Frequency.Frequency_M, 100)
+    d3 = get_n_price_before_now('SHSE.510300', Frequency.Frequency_L, 100)
+    draw_alligator_line(d1)

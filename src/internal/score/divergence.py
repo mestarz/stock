@@ -1,15 +1,14 @@
 from pandas import DataFrame
 import numpy as np
-from src.database.database import get_n_price_before_now, Frequency
-from src.draw import draw
+from src.internal.database.database import get_n_price_before_now, Frequency
 
 
 # 根据三日内是否出现背离线计算做多得分
 def divergence_score_up(df: DataFrame) -> float:
     score = 0.0
 
-    # 获取最近三日数据
-    df = df[-3:]
+    # 获取最近两日数据
+    df = df[-2:]
     divergence_level1 = np.array(df['divergence level1'])
     divergence_level2 = np.array(df['divergence level2'])
     angle = np.array(df['angle'])
@@ -25,14 +24,14 @@ def divergence_score_up(df: DataFrame) -> float:
             divergence_level2[i] = 0
 
     # 最近三日内是否出现底背离线, 一级底背离
-    # 得分计算 权重 * 夹角, 三日权重[1, 2, 4]
+    # 得分计算 权重 * 夹角, 三日权重[1, 3]
     divergence_level1_angle = divergence_level1 * angle
-    score += sum(divergence_level1_angle * [1, 2, 4])
+    score += sum(divergence_level1_angle * [1, 3])
 
     # 三日内是否出现底背离线, 二级底背离
-    # 得分计算 权重 * 夹角, 三日权重[1, 2, 4] * 0.5
+    # 得分计算 权重 * 夹角, 三日权重[1, 3] * 0.1
     divergence_level2_angle = divergence_level2 * angle
-    score += sum(divergence_level2_angle * [1, 2, 4] * 0.5)
+    score += sum(divergence_level2_angle * [1, 3] * 0.1)
 
     return score
 
@@ -41,8 +40,8 @@ def divergence_score_up(df: DataFrame) -> float:
 def divergence_score_down(df: DataFrame) -> float:
     score = 0.0
 
-    # 获取最近三日数据
-    df = df[-3:]
+    # 获取最近两日数据
+    df = df[-2:]
     divergence_level1 = np.array(df['divergence level1'])
     divergence_level2 = np.array(df['divergence level2'])
     angle = np.array(df['angle'])
@@ -58,14 +57,14 @@ def divergence_score_down(df: DataFrame) -> float:
             divergence_level2[i] = 0
 
     # 最近三日内是否出现底背离线, 一级底背离
-    # 得分计算 权重 * 夹角, 三日权重[1, 2, 4]
+    # 得分计算 权重 * 夹角, 三日权重[1, 3]
     divergence_level1_angle = divergence_level1 * angle
-    score += sum(divergence_level1_angle * [1, 2, 4])
+    score += sum(divergence_level1_angle * [1, 3])
 
     # 三日内是否出现底背离线, 二级底背离
-    # 得分计算 权重 * 夹角, 三日权重[1, 2, 4] * 0.5
+    # 得分计算 权重 * 夹角, 三日权重[1, 3] * 0.5
     divergence_level2_angle = divergence_level2 * angle
-    score += sum(divergence_level2_angle * [1, 2, 4] * 0.5)
+    score += sum(divergence_level2_angle * [1, 3] * 0.1)
 
     # 三日得分求和
     return score
