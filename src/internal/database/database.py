@@ -44,3 +44,42 @@ def get_n_price_before_now(symbol: str, frequency: Frequency, count: int) -> Dat
     analyse_volatility(data)
 
     return data
+
+
+# 获取A股股票, 返回字典
+# 获取各个行业股票信息
+# SHSE.000985	中证全指, all
+# SHSE.000986	全指能源, energy
+# SHSE.000987	全指材料, material
+# SHSE.000988	全指工业, industry
+# SHSE.000989	全指可选, optional
+# SHSE.000990	全指消费, consumption
+# SHSE.000991	全指医药, medicine
+# SHSE.000992	全指金融, finance
+# SHSE.000993	全指信息, information
+# SHSE.000994	全指电信, telecom
+# SHSE.000995	全指公用, public
+# 参考：https://emquant.18.cn/help/doc/data/data_index.html
+def get_all_stocks() -> dict[str, []]:
+    def get_stocks_list(index: str) -> []:
+        return get_constituents(index, fields=None, df=True)['symbol'].tolist()
+
+    result = dict()
+    result['all'] = get_stocks_list("SHSE.000985")
+    result['energy'] = get_stocks_list("SHSE.000986")
+    result['material'] = get_stocks_list("SHSE.000987")
+    result['industry'] = get_stocks_list("SHSE.000988")
+    result['optional'] = get_stocks_list("SHSE.000989")
+    result['consumption'] = get_stocks_list("SHSE.000990")
+    result['medicine'] = get_stocks_list("SHSE.000991")
+    result['finance'] = get_stocks_list("SHSE.000992")
+    result['information'] = get_stocks_list("SHSE.000993")
+    result['telecom'] = get_stocks_list("SHSE.000994")
+    result['public'] = get_stocks_list("SHSE.000995")
+    return result
+
+
+# 获取可转债数据
+if __name__ == '__main__':
+    infos = get_all_stocks()
+    print(infos)

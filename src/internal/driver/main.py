@@ -1,18 +1,19 @@
 import os
 
-from src.internal.database.database import get_n_price_before_now, Frequency
+from gm.api import get_history_constituents
+
+from src.internal.database.database import get_n_price_before_now, Frequency, get_all_stocks
 from src.internal.score.divergence import divergence_score_up, divergence_score_down
 
 
-# 遍历 data/symbol.data文件中的所有股票代码，根据divergence_score_up和divergence_score_down计算得分，将得分写入到data/score.data文件中
+# 获取全部股票,根据divergence_score_up和divergence_score_down计算得分，将得分写入到data/score.data文件中
 # data/score.data文件中的数据格式为：股票代码,做多得分,做空得分,波动率得分
 def analyse_divergence_score():
     # 获取项目根目录
     root_path = os.path.dirname(os.path.dirname(__file__))
 
     # 读取股票代码
-    with open(os.path.join(root_path, 'data/symbol.data'), 'r') as f:
-        symbol_list = f.read().splitlines()
+    symbol_list = get_all_stocks()['all']
 
     # 遍历所有股票代码，计算得分
     with open(os.path.join(root_path, 'data/score.data'), 'w') as f:
@@ -70,6 +71,6 @@ def get_weight_by_volatility(data: []):
 
 
 if __name__ == '__main__':
+    # analyse_divergence_score()
     scores = get_top_100_score_up()
     print(get_weight_by_volatility(scores))
-    # analyse_divergence_score()
