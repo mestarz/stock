@@ -33,7 +33,7 @@ def analyse_divergence_score():
     root_path = os.path.dirname(os.path.dirname(__file__))
 
     # 读取股票代码
-    symbol_list = get_all_stocks()['all'][:100]
+    symbol_list = get_all_stocks()['all']
 
     # 获取基本面信息
     fundamentals = get_n_fundamental_before_now(symbol_list)
@@ -127,19 +127,39 @@ def get_weight_by_volatility(data: []):
     return weight_dict
 
 
-# 将股票代码及占比导出到data/output_stock.txt文件中
-def output(datas: [[]]):
+# 将股票代码及占比导出到文件中
+# 同花顺可用
+def output(datas: [[]], filename: str):
     # 计算波动率
     weight_dict = get_weight_by_volatility(datas)
-    # 将[股票代码,占比]写入文件data/output_stock.txt中
-    with open(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data/output_stock.txt'), 'w') as f:
+    # 将[股票代码,占比]写入文件中
+    with open(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data/' + filename), 'w') as f:
         for key in weight_dict.keys():
             f.write(key + ',' + str(weight_dict[key]) + '\n')
     # 同时将data/output_stock.txt拷贝到桌面
-    os.system('cp ' + os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data/output_stock.txt') + ' ~/Desktop')
+    os.system('cp ' + os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data/' + filename) + ' ~/Desktop')
+
+
+# 将股票代码导出到文件中
+# 东方财富可用
+def output_dfcf(data: [[]], filename: str):
+    # 将股票代码写入文件中
+    with open(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data/' + filename), 'w') as f:
+        for x in data:
+            symbol = x[0]
+            # 去掉前缀
+            if symbol.startswith('SHSE'):
+                symbol = symbol[5:]
+            elif symbol.startswith('SZSE'):
+                symbol = symbol[5:]
+            else:
+                assert False and "symbol error"
+            f.write(symbol + '\n')
 
 
 if __name__ == '__main__':
     analyse_divergence_score()
     scores = get_topn_score_up(50)
-    output(scores)
+    output(scores, 'output_stock.txt')
+    scores = get_topn_score_up(10)
+    output_dfcf(scores, 'stock.txt')
