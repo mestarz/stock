@@ -1,4 +1,6 @@
 from datetime import datetime
+
+import pandas
 from gm.api import *
 from pandas import DataFrame
 
@@ -46,6 +48,24 @@ def get_n_price_before_now(symbol: str, frequency: Frequency, count: int) -> Dat
     return data
 
 
+# 获取当前的基本面数据，包括市盈率、市净率、市销率、市现率、总市值、当日换手率
+def get_n_fundamental_before_now(symbols: [str]) -> DataFrame:
+    def get_info(syms: [str]) -> DataFrame:
+        return get_fundamentals(table='tq_sk_finindic', symbols=syms, start_date=now, end_date=now,
+                                fields="PETTM, PB, PSTTM, PCTTM, TOTMKTCAP, TURNRATE", df=True)
+
+    # 每100个股票一次请求
+    step = 50
+    data = get_info(symbols[:step])
+    data.set_index('symbol', inplace=True)
+    if len(symbols) > step:
+        for i in range(step, len(symbols), step):
+            new_data = get_info(symbols[i:i + step])
+            new_data.set_index('symbol', inplace=True)
+            data = pandas.concat([data, new_data])
+    return data
+
+
 # 获取A股股票, 返回字典
 # 获取各个行业股票信息
 # SHSE.000985	中证全指, all
@@ -81,5 +101,7 @@ def get_all_stocks() -> dict[str, []]:
 
 # 获取可转债数据
 if __name__ == '__main__':
-    infos = get_all_stocks()
+    # infos = get_all_stocks()
+    # print(infos)
+    infos = get_n_fundamental_before_now(['SZSE.002923', 'SHSE.603826'])
     print(infos)

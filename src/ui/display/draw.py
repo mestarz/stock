@@ -92,5 +92,5 @@ def draw_alligator_line(day: DataFrame):
 
 
 if __name__ == '__main__':
-    d1 = get_n_price_before_now('SHSE.113065', Frequency.Frequency_H, 300)
+    d1 = get_n_price_before_now('SHSE.510300', Frequency.Frequency_H, 300)
     draw_alligator_line(d1)
