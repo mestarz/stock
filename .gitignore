@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 .idea/
 configure.py
+./src/internal/data/*
 
 # C extensions
 *.so
