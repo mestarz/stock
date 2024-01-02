@@ -46,6 +46,7 @@ def analyse_divergence_score():
     score_manager.add_score_pass(chaos_operations.SecondInnerBuySellPoint(2))
     score_manager.add_score_pass(chaos_operations.ThirdInnerBuySellPoint(4))
     score_manager.add_score_pass(chaos_operations.ChaosLimit())
+    score_manager.add_score_pass(chaos_operations.StockFluctuateLimit())
     score_manager.add_score_pass(chaos_operations.FundamentalLimit())
 
     # 遍历所有股票代码，计算得分
