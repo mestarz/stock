@@ -86,5 +86,5 @@ def output(symbols: [str]):
 
 if __name__ == '__main__':
     analyse_divergence_score_bond()
-    top = get_topn_bond(50)
+    top = get_topn_bond(30)
     output([x[0] for x in top])

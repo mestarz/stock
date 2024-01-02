@@ -292,7 +292,7 @@ class ThirdInnerBuySellPoint(ScorePass):
         return 0
 
 
-class ChaosLimit(LimitPass):
+class StockFluctuateLimit(LimitPass):
 
     def run_up(self, df: DataFrame) -> bool:
         # 最近3天波动过大，超过10%
@@ -309,6 +309,25 @@ class ChaosLimit(LimitPass):
         if (max30day - min30day) / min30day > 0.3:
             return False
 
+    def run_down(self, df: DataFrame) -> bool:
+        # 最近3天波动过大，超过10%
+        assert len(df) >= 3
+        min5day = df['low'].values[-3:].min()
+        max5day = df['high'].values[-3].max()
+        if (max5day - min5day) / min5day > 0.1:
+            return False
+
+        # 最近30日内波动过大，超过30%
+        assert len(df) >= 30
+        min30day = df['low'].values[-30:].min()
+        max30day = df['high'].values[-30:].max()
+        if (max30day - min30day) / min30day > 0.3:
+            return False
+
+
+class ChaosLimit(LimitPass):
+
+    def run_up(self, df: DataFrame) -> bool:
         # 做多背离柱风险, 当跌破30日内最底背离柱时，卖出，返回False
         # 获取最近30日数据
         df = df[-30:]
@@ -322,17 +341,9 @@ class ChaosLimit(LimitPass):
         # 如果最近的底背离柱在之后被下击穿，存在风险
         if index != -1 and df['low'].values[index] > min(df['low'].values[index:]):
             return False
-
         return True
 
     def run_down(self, df: DataFrame) -> bool:
-        # 最近3天波动过大，超过10%
-        assert len(df) >= 3
-        min5day = df['low'].values[-3:].min()
-        max5day = df['high'].values[-3].max()
-        if (max5day - min5day) / min5day > 0.1:
-            return False
-
         # 做空背离柱风险, 当突破30日内最高背离柱时，卖出，返回False
         # 获取最近30日数据
         df = df[-30:]
@@ -346,7 +357,6 @@ class ChaosLimit(LimitPass):
         # 如果最近的顶背离柱被上击穿，存在风险
         if index != -1 and df['high'].values[index] < max(df['high'].values[index:]):
             return False
-
         return True
 
 
