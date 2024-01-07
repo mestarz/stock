@@ -53,7 +53,7 @@ class CBondLimit(LimitPass):
 
         # 债券价格过高
         current_price = df['close'].values[-1]
-        if current_price > 130:
+        if current_price > 120:
             return False
 
         # 最近5天波动过大，超过10%, 仅限制高价格债券
