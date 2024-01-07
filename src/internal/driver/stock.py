@@ -1,5 +1,6 @@
 import os
 
+from src.internal.data.configure import root_path
 from src.internal.database.database import get_n_price_before_now, Frequency, get_all_stocks, \
     get_n_fundamental_before_now
 import src.internal.score.score as score
@@ -29,9 +30,6 @@ def set_fundamental(symbol: str, df: DataFrame, fundamentals: DataFrame):
 # 获取全部股票,根据divergence_score_up和divergence_score_down计算得分，将得分写入到data/score.data文件中
 # data/score.data文件中的数据格式为：股票代码,做多得分,做空得分,波动率得分
 def analyse_divergence_score():
-    # 获取项目根目录
-    root_path = os.path.dirname(os.path.dirname(__file__))
-
     # 读取股票代码
     symbol_list = get_all_stocks()['all']
 
@@ -68,8 +66,6 @@ def analyse_divergence_score():
 
 # 读取data/score.data文件中的数据，根据做多得分进行排序，选取前n个股票，作为返回值
 def get_topn_score_up(n: int = 100) -> [[]]:
-    # 获取项目根目录
-    root_path = os.path.dirname(os.path.dirname(__file__))
 
     # 读取股票代码
     with open(os.path.join(root_path, 'data/score.data'), 'r') as f:
