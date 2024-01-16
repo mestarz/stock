@@ -78,9 +78,8 @@ class CBondLimit(LimitPass):
         elif price < 100:
             return premium < 0.5
         elif price < 120:
-            return premium < 0.2
-        else:
-            return premium < 0.1
+            return premium < 0.05
+        return False
 
     def run_down(self, df: DataFrame) -> bool:
         return True

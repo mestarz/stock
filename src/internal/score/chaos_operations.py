@@ -366,15 +366,15 @@ class FundamentalLimit(LimitPass):
 
     def run_up(self, df: DataFrame) -> bool:
         # 过滤掉价格高于price_limit的股票
-        price_limit = 50
-        if df['close'].values[-1] > price_limit:
-            return False
+        # price_limit = 50
+        # if df['close'].values[-1] > price_limit:
+        #     return False
 
         # 基本面分析, pe, pb, ps, pc, market_cap, turn_rate
         # 过滤掉市值大的股票, 100亿以下
-        market_cap = df['mark_cap'].values[-1]
-        if market_cap > 1e+10:
-            return False
+        # market_cap = df['mark_cap'].values[-1]
+        # if market_cap > 1e+10:
+        #     return False
         # 过滤掉市盈率高的股票
         pe = df['pe'].values[-1]
         if pe > 40 or pe < 0:
